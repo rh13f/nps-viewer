@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Generator, Optional
 
-from opensearchpy import OpenSearch, ConnectionError as OSConnectionError
+from opensearchpy import OpenSearch, ConnectionError as OSConnectionError, TransportError
 
 from app.config import Config
 
@@ -29,7 +29,7 @@ def is_reachable(client: OpenSearch) -> bool:
     """Return True if OpenSearch responds to a ping."""
     try:
         return client.ping()
-    except OSConnectionError:
+    except (OSConnectionError, TransportError):
         return False
 
 

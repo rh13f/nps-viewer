@@ -6,8 +6,6 @@ from typing import Optional
 from app.config import FieldsConfig
 from app.connect_info import parse_connect_info
 from app.mac_utils import normalise_mac, InvalidMacError
-from app.reason_codes import lookup as rc_lookup
-
 
 STATUS_LABELS = {1: "Start", 2: "Stop", 3: "Interim-Update"}
 
@@ -42,7 +40,7 @@ class Session:
     duration_seconds: Optional[int]
     data_in_bytes: Optional[int]
     data_out_bytes: Optional[int]
-    connect_info: Optional[str]
+    connect_info_raw: Optional[str]
     speed_mbps: Optional[float]
     standard: Optional[str]
     rssi: Optional[int]
@@ -129,7 +127,8 @@ def correlate_sessions(
         events.sort(key=lambda e: e.timestamp)
 
         start_event = next((e for e in events if e.status_type == 1), None)
-        stop_event = next((e for e in events if e.status_type == 2), None)
+        stop_events = [e for e in events if e.status_type == 2]
+        stop_event = stop_events[-1] if stop_events else None
         interim_events = [e for e in events if e.status_type == 3]
         last_interim = interim_events[-1] if interim_events else None
 
@@ -165,7 +164,7 @@ def correlate_sessions(
             duration_seconds=duration,
             data_in_bytes=data_in,
             data_out_bytes=data_out,
-            connect_info=representative.connect_info_raw,
+            connect_info_raw=representative.connect_info_raw,
             speed_mbps=ci.speed_mbps,
             standard=ci.standard,
             rssi=ci.rssi,
