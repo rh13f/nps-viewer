@@ -24,3 +24,7 @@ def test_invalid_mac_raises():
 def test_invalid_too_short():
     with pytest.raises(InvalidMacError):
         normalise_mac("28:92:00")
+
+def test_invalid_hex_chars():
+    with pytest.raises(InvalidMacError):
+        normalise_mac("28:9G:00:DA:05:CA")
