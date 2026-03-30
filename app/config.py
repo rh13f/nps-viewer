@@ -1,8 +1,13 @@
+"""Configuration dataclasses and loader for nps-api. Reads /etc/nps-api/config.yaml or NPS_CONFIG env var."""
 from __future__ import annotations
+import dataclasses
+import logging
 import os
 from dataclasses import dataclass, field
 from typing import Optional
 import yaml
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -59,20 +64,23 @@ class Config:
 
 
 def load_config(path: Optional[str] = None) -> Config:
-    import logging
-    logger = logging.getLogger(__name__)
     path = path or os.environ.get("NPS_CONFIG", "/etc/nps-api/config.yaml")
     try:
         with open(path) as f:
             raw = yaml.safe_load(f) or {}
     except FileNotFoundError:
+        logger.warning("Config file not found at %s, using defaults", path)
+        raw = {}
+    except PermissionError as e:
+        logger.error("Cannot read config file at %s: %s", path, e)
         raw = {}
 
     def _build(cls, data):
         if not data:
             return cls()
-        known = {k: v for k, v in data.items() if hasattr(cls, k)}
-        unknown = [k for k in data if not hasattr(cls, k)]
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        known = {k: v for k, v in data.items() if k in field_names}
+        unknown = [k for k in data if k not in field_names]
         if unknown:
             logger.warning(
                 "config.yaml: unknown keys in %s section: %s — check for typos",
