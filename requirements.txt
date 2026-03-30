@@ -1,0 +1,4 @@
+fastapi>=0.110
+uvicorn>=0.29
+opensearch-py>=2.4
+pyyaml>=6.0
