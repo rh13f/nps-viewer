@@ -1,0 +1,56 @@
+{
+  "title": "NPS - MAC Tracker",
+  "uid": "nps-mac-tracker",
+  "tags": ["nps", "radius", "mac"],
+  "timezone": "browser",
+  "refresh": "",
+  "time": {"from": "now-30d", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "mac",
+        "label": "MAC Address",
+        "type": "textbox",
+        "current": {"value": ""},
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Sessions for MAC: ${mac}",
+      "type": "table",
+      "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/mac/${mac}",
+          "params": {
+            "from": "${__from:date:iso}",
+            "to": "${__to:date:iso}"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "data_in_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data In"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "data_out_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data Out"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "duration_seconds"},
+            "properties": [{"id": "unit", "value": "s"}, {"id": "displayName", "value": "Duration"}]
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 38
+}

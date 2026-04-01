@@ -1,0 +1,70 @@
+{
+  "title": "NPS - Auth Failures",
+  "uid": "nps-auth-failures",
+  "tags": ["nps", "radius", "failures"],
+  "timezone": "browser",
+  "refresh": "",
+  "time": {"from": "now-24h", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "reason_code",
+        "label": "Reason Code",
+        "type": "query",
+        "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+        "query": "/reason-codes",
+        "current": {"value": ""},
+        "includeAll": true,
+        "allValue": ""
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Failures Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "grafana-opensearch-datasource", "uid": "nps-opensearch"},
+      "targets": [
+        {
+          "refId": "A",
+          "query": "winlog_event_data_Reason-Code:(NOT 0)",
+          "queryType": "lucene",
+          "timeField": "timestamp",
+          "metrics": [{"type": "count", "id": "1"}],
+          "bucketAggs": [{"type": "date_histogram", "id": "2", "field": "timestamp", "settings": {"interval": "auto"}}]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Failure Events",
+      "type": "table",
+      "gridPos": {"h": 14, "w": 24, "x": 0, "y": 8},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/failures",
+          "params": {
+            "from": "${__from:date:iso}",
+            "to": "${__to:date:iso}",
+            "reason": "${reason_code}",
+            "limit": "500"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "reason_description"},
+            "properties": [{"id": "displayName", "value": "Reason"}]
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 38
+}

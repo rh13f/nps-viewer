@@ -1,0 +1,53 @@
+{
+  "title": "NPS - AP Summary",
+  "uid": "nps-ap-summary",
+  "tags": ["nps", "radius", "ap"],
+  "timezone": "browser",
+  "refresh": "",
+  "time": {"from": "now-24h", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "title": "Connections per AP",
+      "type": "barchart",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/aps",
+          "params": {"from": "${__from:date:iso}", "to": "${__to:date:iso}"}
+        }
+      ],
+      "options": {"xField": "ap_name"},
+      "fieldConfig": {
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "total_sessions"}, "properties": [{"id": "displayName", "value": "Total Sessions"}]},
+          {"matcher": {"id": "byName", "options": "failure_rate_pct"}, "properties": [{"id": "unit", "value": "percent"}, {"id": "displayName", "value": "Failure Rate"}]}
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "AP Details",
+      "type": "table",
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 8},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/aps",
+          "params": {"from": "${__from:date:iso}", "to": "${__to:date:iso}"}
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "failure_rate_pct"}, "properties": [{"id": "unit", "value": "percent"}]}
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 38
+}

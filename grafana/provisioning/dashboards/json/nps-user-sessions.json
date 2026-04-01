@@ -1,0 +1,89 @@
+{
+  "title": "NPS - User Sessions",
+  "uid": "nps-user-sessions",
+  "tags": ["nps", "radius"],
+  "timezone": "browser",
+  "refresh": "",
+  "time": {"from": "now-24h", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "textbox",
+        "current": {"value": ""},
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Sessions",
+      "type": "table",
+      "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/sessions",
+          "params": {
+            "user": "${username}",
+            "from": "${__from:date:iso}",
+            "to": "${__to:date:iso}",
+            "limit": "500"
+          }
+        }
+      ],
+      "options": {
+        "sortBy": [{"displayName": "start_time", "desc": true}]
+      },
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "data_in_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data In"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "data_out_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data Out"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "duration_seconds"},
+            "properties": [{"id": "unit", "value": "s"}, {"id": "displayName", "value": "Duration"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "session_id"},
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "View raw events",
+                    "url": "/d/nps-session-detail?var-session_id=${__value.raw}&${__url_time_range}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {"id": "byName", "options": "status"},
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {"type": "value", "options": {"closed":   {"text": "Closed",  "color": "blue"}}},
+                  {"type": "value", "options": {"active":   {"text": "Active",  "color": "green"}}},
+                  {"type": "value", "options": {"unknown":  {"text": "Unknown", "color": "orange"}}}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 38
+}

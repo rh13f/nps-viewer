@@ -1,0 +1,64 @@
+{
+  "title": "NPS - Session Detail",
+  "uid": "nps-session-detail",
+  "tags": ["nps", "radius"],
+  "timezone": "browser",
+  "time": {"from": "now-24h", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "session_id",
+        "label": "Session ID",
+        "type": "textbox",
+        "current": {"value": ""},
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Raw Events for Session ${session_id}",
+      "type": "table",
+      "gridPos": {"h": 16, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "marcusolsson-json-datasource", "uid": "nps-api"},
+      "targets": [
+        {
+          "refId": "A",
+          "method": "GET",
+          "path": "/sessions/${session_id}/events"
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "data_in_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data In"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "data_out_bytes"},
+            "properties": [{"id": "unit", "value": "bytes"}, {"id": "displayName", "value": "Data Out"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "session_time_seconds"},
+            "properties": [{"id": "unit", "value": "s"}, {"id": "displayName", "value": "Session Time"}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "status_label"},
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {"type": "value", "options": {"Start":          {"color": "green"}}},
+                  {"type": "value", "options": {"Stop":           {"color": "text"}}},
+                  {"type": "value", "options": {"Interim-Update": {"color": "blue"}}}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 38
+}
