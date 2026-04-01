@@ -4,7 +4,7 @@ datasources:
   - name: NPS-API
     uid: nps-api
     type: marcusolsson-json-datasource
-    url: http://localhost:8000
+    url: http://localhost:8765
     access: proxy
     isDefault: false
     editable: false

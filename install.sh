@@ -128,7 +128,7 @@ echo "Grafana started."
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
 echo "=== Install complete ==="
-echo "  nps-api:  http://localhost:8000/health"
+echo "  nps-api:  http://localhost:8765/health"
 echo "  Grafana:  http://$(hostname -I | awk '{print $1}'):3000  (admin/admin — change on first login)"
 echo "  Config:   $CONFIG_DIR/config.yaml"
 echo ""

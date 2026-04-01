@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=nps-api
 WorkingDirectory=/opt/nps-api
-ExecStart=/opt/nps-api/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+ExecStart=/opt/nps-api/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8765
 Restart=on-failure
 RestartSec=5
 Environment=NPS_CONFIG=/etc/nps-api/config.yaml
