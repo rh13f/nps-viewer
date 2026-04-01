@@ -1,0 +1,25 @@
+apiVersion: 1
+
+datasources:
+  - name: NPS-API
+    uid: nps-api
+    type: marcusolsson-json-datasource
+    url: http://localhost:8000
+    access: proxy
+    isDefault: false
+    editable: false
+
+  - name: NPS-OpenSearch
+    uid: nps-opensearch
+    type: grafana-opensearch-datasource
+    url: http://localhost:9200
+    access: proxy
+    isDefault: false
+    editable: false
+    jsonData:
+      index: "graylog_*"
+      timeField: "timestamp"
+      version: "2.0.0"
+      flavor: "opensearch"
+      logMessageField: "winlog_event_data_User-Name"
+      logLevelField: "winlog_event_data_Acct-Status-Type"
